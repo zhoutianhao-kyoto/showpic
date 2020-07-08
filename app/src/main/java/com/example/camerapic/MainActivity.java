@@ -68,34 +68,26 @@ public class MainActivity extends Activity{
             }
         });
 
-        if(ActivityCompat.checkSelfPermission(getApplicationContext(),
-                android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
-           ActivityCompat.checkSelfPermission(getApplicationContext(),
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                    android.Manifest.permission.RECORD_AUDIO,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_AUDIO_PERMISSION_CODE);
-        }
-
         startbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                stopbtn.setEnabled(true);
-                startbtn.setEnabled(false);
-                playbtn.setEnabled(false);
-                stopplay.setEnabled(false);
-                mRecorder = new MediaRecorder();
-                mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                mRecorder.setOutputFile(mFileName);
-                try {
-                    mRecorder.prepare();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if(requestAudioPermission()) {
+                    stopbtn.setEnabled(true);
+                    startbtn.setEnabled(false);
+                    playbtn.setEnabled(false);
+                    stopplay.setEnabled(false);
+                    mRecorder = new MediaRecorder();
+                    mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                    mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                    mRecorder.setOutputFile(mFileName);
+                    try {
+                        mRecorder.prepare();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    mRecorder.start();
                 }
-                mRecorder.start();
             }
         });
 
@@ -172,5 +164,18 @@ public class MainActivity extends Activity{
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean requestAudioPermission(){
+        if(ActivityCompat.checkSelfPermission(getApplicationContext(),
+                android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    android.Manifest.permission.RECORD_AUDIO,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_AUDIO_PERMISSION_CODE);
+            return false;
+        }
+        return true;
     }
 }
